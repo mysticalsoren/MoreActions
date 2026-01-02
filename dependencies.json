@@ -1,1 +1,6 @@
-{}
+{
+    "MysticalSorenUtilities": {
+        "git": "https://gitea.com/mysticalsoren/Utils.git",
+        "hash": "4a80c7b9d8b92b8bd90fa6d111a06e8469f34083"
+    }
+}
