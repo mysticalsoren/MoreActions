@@ -1,4 +1,5 @@
 class MoreActions {
+    static NAMESPACE = "SorenMoreActions"
     static DEBUG = true
     static debug(msg) {
         if (this.DEBUG) {
@@ -6,10 +7,42 @@ class MoreActions {
         }
     }
     static onInput() {
+        const rootConfig = MysticalSorenUtilities.getState(this.NAMESPACE, {
+            config: {
+                enabled: true,
+                closeQuotations: true,
+                doContext: {
+                    convertFirstPersonNouns: true,
+                    firstLetterCapitalization: true
+                },
+                sayContext: {
+                    convertUnicodePunctuation: true,
+                    convertDashToEm: true,
+                    interruptionAction: true,
+                    questionAction: true,
+                    neutralYellAction: true,
+                    extremeYellAction: true,
+                    emphasisAction: true
+                }
+            },
+            cardId: 0
+        })
+        if (rootConfig.cardId < 0) {
+            storyCards.push({
+                title: "MoreActions Configuration",
+                type: "Class",
+                keys: "",
+                description: "Changes",
+                entry: ""
+            })
+        }
         const doContext = text.match(/> You (.+)/)
         const sayContext = text.match(/> You say "(.+)"/)
         if (sayContext) {
             let content = sayContext[1]
+            content = content.replaceAll(/(?<=")[^"\n'`]+(?!.*")/g, (match => { return `${match}"` }))
+            content = content.replaceAll(/(?<=')[^'\n"`]+(?!.*')/g, (match => { return `${match}'` }))
+            content = content.replaceAll(/(?<=`)[^`\n"']+(?!.*`)/g, (match => { return `${match}\`` }))
             content.replaceAll(/\u203C/ug, "!!")
             content.replaceAll(/\u203D/ug, (_) => {
                 return MysticalSorenUtilities.randomItem(["?!", "!?"])
