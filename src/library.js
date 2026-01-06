@@ -27,6 +27,7 @@ class MoreActions {
             },
             cardId: -1
         })
+        /*
         if (rootConfig.cardId < 0) {
             const card = storyCards[addStoryCard("", "", "Class")]
             rootConfig.cardId = Number(card.id)
@@ -50,6 +51,7 @@ class MoreActions {
                 this.debug("Config card could not be found!")
             }
         }
+            */
         const doContext = text.match(/> You (.+)/)
         const sayContext = text.match(/> You say "(.+)"/)
         if (sayContext) {
