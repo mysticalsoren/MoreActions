@@ -28,65 +28,99 @@ class MoreActions {
             cardId: 0
         })
         if (rootConfig.cardId < 0) {
-            storyCards.push({
-                title: "MoreActions Configuration",
-                type: "Class",
-                keys: "",
-                description: "Changes",
-                entry: ""
-            })
+            const card = addStoryCard("", "", "Class")
+            rootConfig.cardId = Number(card.id)
+            card.title = "MoreActions Configuration"
+            card.description = "Changes Do / Say / Story to be more dynamic."
+            card.type = "Class"
+            card.keys = ""
+            card.entry = MysticalSorenUtilities.TOML.composeObject(rootConfig.config)
+        } else {
+            const cardIdx = MysticalSorenUtilities.getStoryCardIndexById(rootConfig.cardId)
+            if (cardIdx > -1) {
+                const card = storyCards[cardIdx]
+                const storyCardConfig = MysticalSorenUtilities.TOML.toJson(card.entry)
+                if (MysticalSorenUtilities.hasKeys(storyCardConfig)) {
+                    rootConfig.config = storyCardConfig
+                } else {
+                    this.debug("Could not parse user toml. Possibly user error.")
+                }
+            } else {
+                this.debug("Config card could not be found!")
+            }
         }
         const doContext = text.match(/> You (.+)/)
         const sayContext = text.match(/> You say "(.+)"/)
         if (sayContext) {
             let content = sayContext[1]
-            content = content.replaceAll(/(?<=")[^"\n'`]+(?!.*")/g, (match => { return `${match}"` }))
-            content = content.replaceAll(/(?<=')[^'\n"`]+(?!.*')/g, (match => { return `${match}'` }))
-            content = content.replaceAll(/(?<=`)[^`\n"']+(?!.*`)/g, (match => { return `${match}\`` }))
-            content.replaceAll(/\u203C/ug, "!!")
-            content.replaceAll(/\u203D/ug, (_) => {
-                return MysticalSorenUtilities.randomItem(["?!", "!?"])
-            })
-            content.replaceAll(/\u2048/ug, "?!")
-            content.replaceAll(/\u2049/ug, "!?")
-            content.replaceAll(/\u2047/ug, "??")
+            if (rootConfig.config.closeQuotations) {
+                content = content.replaceAll(/(?<=")[^"\n'`]+(?!.*")/g, (match => { return `${match}"` }))
+                content = content.replaceAll(/(?<=')[^'\n"`]+(?!.*')/g, (match => { return `${match}'` }))
+                content = content.replaceAll(/(?<=`)[^`\n"']+(?!.*`)/g, (match => { return `${match}\`` }))
+            }
+            if (rootConfig.config.convertUnicodePunctuation) {
+                content.replaceAll(/\u203C/ug, "!!")
+                content.replaceAll(/\u203D/ug, (_) => {
+                    return MysticalSorenUtilities.randomItem(["?!", "!?"])
+                })
+                content.replaceAll(/\u2048/ug, "?!")
+                content.replaceAll(/\u2049/ug, "!?")
+                content.replaceAll(/\u2047/ug, "??")
+            }
+            if (rootConfig.config.convertDashToEm) {
+                content.replaceAll(/\u2014|\u2013|--/ug, "\u{2014}")
+            }
 
+            if (rootConfig.config.interruptionAction) {
+                let modifiedContent = content.replaceAll(/(?:\u2014|\u2013|--)([!?.]*)$/ug, "\u{2014}$1")
+                if (modifiedContent !== content) {
+                    text = `> You say "${modifiedContent}," but you were cut off.`
+                    content = ""
+                }
+            }
 
-            let modifiedContent = content.replaceAll(/(?:\u2014|\u2013|--)([!?.]*)$/ug, "\u{2014}$1")
-            if (modifiedContent !== content) {
-                text = `> You say "${modifiedContent}," but you were cut off.`
-                content = ""
+            if (rootConfig.config.questionAction) {
+                if (content.match(/\.\.[!?.]$/)) {
+                    const synonyms = ["whisper", "mumble", "quietly say", "mutter", "hesitating say"]
+                    text = `> You ${MysticalSorenUtilities.randomItem(synonyms)} "${content}"`
+                    content = ""
+                }
             }
-            if (content.match(/\.\.[!?.]$/)) {
-                const synonyms = ["whisper", "mumble", "quietly say", "mutter", "hesitating say"]
-                text = `> You ${MysticalSorenUtilities.randomItem(synonyms)} "${content}"`
-                content = ""
+            if (rootConfig.config.extremeYellAction) {
+                if (content.match(/\!\!+$/)) {
+                    const synonyms = ["scream", "wail", "shriek", "roar"]
+                    text = `> You ${MysticalSorenUtilities.randomItem(synonyms)} "${content}"`
+                    content = ""
+                }
             }
-            if (content.match(/\!\!+$/)) {
-                const synonyms = ["scream", "wail", "shriek", "roar"]
-                text = `> You ${MysticalSorenUtilities.randomItem(synonyms)} "${content}"`
-                content = ""
+            if (rootConfig.config.neutralYellAction) {
+                if (content.match(/\!$/)) {
+                    const synonyms = ["yell", "holler", "call", "shout"]
+                    text = `> You ${MysticalSorenUtilities.randomItem(synonyms)} "${content}"`
+                    content = ""
+                }
             }
-            if (content.match(/\!$/)) {
-                const synonyms = ["yell", "holler", "call", "shout"]
-                text = `> You ${MysticalSorenUtilities.randomItem(synonyms)} "${content}"`
-                content = ""
+            if (rootConfig.config.questionAction) {
+                if (content.match(/\?$/)) {
+                    const synonyms = ["ask", "question"]
+                    text = `> You ${MysticalSorenUtilities.randomItem(synonyms)} "${content}"`
+                    content = ""
+                }
             }
-            if (content.match(/\?$/)) {
-                const synonyms = ["ask", "question"]
-                text = `> You ${MysticalSorenUtilities.randomItem(synonyms)} "${content}"`
-                content = ""
+            if (rootConfig.config.emphasisAction) {
+                // TODO
             }
             return { text: text, stop: false }
         }
         if (doContext) {
-            // Quotes
-            text = text.replaceAll(/(?<=")[^"\n'`]+(?!.*")/g, (match => { return `${match}"` }))
-            text = text.replaceAll(/(?<=')[^'\n"`]+(?!.*')/g, (match => { return `${match}'` }))
-            text = text.replaceAll(/(?<=`)[^`\n"']+(?!.*`)/g, (match => { return `${match}\`` }))
-            // First letter capitalization
-            text = text.replaceAll(/([!?.]"?) (\w)/g, (_, g1, g2) => { return `${g1} ${g2.toUpperCase()}` })
-            // First person nouns conversion
+            if (rootConfig.config.closeQuotations) {
+                text = text.replaceAll(/(?<=")[^"\n'`]+(?!.*")/g, (match => { return `${match}"` }))
+                text = text.replaceAll(/(?<=')[^'\n"`]+(?!.*')/g, (match => { return `${match}'` }))
+                text = text.replaceAll(/(?<=`)[^`\n"']+(?!.*`)/g, (match => { return `${match}\`` }))
+            }
+            if (rootConfig.config.firstLetterCapitalization) {
+                text = text.replaceAll(/([!?.]"?) (\w)/g, (_, g1, g2) => { return `${g1} ${g2.toUpperCase()}` })
+            }
             const convertToSecondary = (lowercaseCondition = "", lowercaseReplacement = "") => {
                 const regex = new RegExp(`(?<!".*)\b${lowercaseCondition}\b(?!.*")`, "gi")
                 const titleCase = lowercaseReplacement.substring(0, 1).toUpperCase() + lowercaseReplacement.substring(1).toLowerCase()
@@ -95,8 +129,10 @@ class MoreActions {
                     return codePoint >= 97 && codePoint <= 122 ? lowercaseReplacement.toLowerCase() : titleCase
                 })
             }
-            text = convertToSecondary("me", "you")
-            text = convertToSecondary("am", "are")
+            if (rootConfig.config.convertFirstPersonNouns) {
+                text = convertToSecondary("me", "you")
+                text = convertToSecondary("am", "are")
+            }
             return { text: text, stop: false }
         }
         return { text: text, stop: false }
