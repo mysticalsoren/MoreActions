@@ -47,13 +47,23 @@ class MoreActions {
             return { text: text, stop: false }
         }
         if (doContext) {
-            text = text.replaceAll(/([!?.]) (\w)/g, (_, g1, g2) => { return `${g1} ${g2.toUpperCase()}` })
-            text = text.replaceAll(/\bme\b/gi, (match) => {
-                return match.codePointAt(0) === 109 ? "you" : "You"
-            })
-            text = text.replaceAll(/\bam\b/gi, (match) => {
-                return match.codePointAt(0) === 97 ? "are" : "Are"
-            })
+            // Quotes
+            text = text.replaceAll(/(?<=")[^"\n'`]+(?!.*")/g, (match => { return `${match}"` }))
+            text = text.replaceAll(/(?<=')[^'\n"`]+(?!.*')/g, (match => { return `${match}'` }))
+            text = text.replaceAll(/(?<=`)[^`\n"']+(?!.*`)/g, (match => { return `${match}\`` }))
+            // First letter capitalization
+            text = text.replaceAll(/([!?.]"?) (\w)/g, (_, g1, g2) => { return `${g1} ${g2.toUpperCase()}` })
+            // First person nouns conversion
+            const convertToSecondary = (lowercaseCondition = "", lowercaseReplacement = "") => {
+                const regex = new RegExp(`(?<!".*)\b${lowercaseCondition}\b(?!.*")`, "gi")
+                const titleCase = lowercaseReplacement.substring(0, 1).toUpperCase() + lowercaseReplacement.substring(1).toLowerCase()
+                return text.replaceAll(regex, (match) => {
+                    const codePoint = match.codePointAt(0)
+                    return codePoint >= 97 && codePoint <= 122 ? lowercaseReplacement.toLowerCase() : titleCase
+                })
+            }
+            text = convertToSecondary("me", "you")
+            text = convertToSecondary("am", "are")
             return { text: text, stop: false }
         }
         return { text: text, stop: false }
