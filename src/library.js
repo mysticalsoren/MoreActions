@@ -25,7 +25,7 @@ class MoreActions {
                     emphasisAction: true
                 }
             },
-            cardId: 0
+            cardId: -1
         })
         if (rootConfig.cardId < 0) {
             const card = addStoryCard("", "", "Class")
