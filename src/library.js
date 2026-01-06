@@ -28,7 +28,7 @@ class MoreActions {
             cardId: -1
         })
         if (rootConfig.cardId < 0) {
-            const card = addStoryCard("", "", "Class")
+            const card = storyCards[addStoryCard("", "", "Class")]
             rootConfig.cardId = Number(card.id)
             card.title = "MoreActions Configuration"
             card.description = "Changes Do / Say / Story to be more dynamic."
