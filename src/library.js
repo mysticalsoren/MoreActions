@@ -34,16 +34,17 @@ class MoreActions {
             card.description = "Changes Do / Say / Story to be more dynamic."
             card.type = "Class"
             card.keys = ""
-            card.entry = MysticalSorenUtilities.TOML.composeObject(rootConfig.config)
+            card.entry = JSON.stringify(rootConfig.config, (_, value) => {
+                return value
+            }, 1)
         } else {
             const cardIdx = MysticalSorenUtilities.getStoryCardIndexById(rootConfig.cardId)
             if (cardIdx > -1) {
                 const card = storyCards[cardIdx]
-                const storyCardConfig = MysticalSorenUtilities.TOML.toJson(card.entry)
-                if (MysticalSorenUtilities.hasKeys(storyCardConfig)) {
-                    rootConfig.config = storyCardConfig
-                } else {
-                    this.debug("Could not parse user toml. Possibly user error.")
+                try {
+                    rootConfig.config = JSON.parse(card.entry)
+                } catch (error) {
+                    this.debug(`Could not parse user json. Possibly user error.\n${error}`)
                 }
             } else {
                 this.debug("Config card could not be found!")
