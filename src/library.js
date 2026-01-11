@@ -9,7 +9,7 @@ class SorenMoreActions {
     static getConfig() {
         return MysticalSorenUtilities.getState(this.NAMESPACE, {
             config: {
-                enabled: true,
+                enabled: false,
                 closeQuotations: true,
                 doContext: {
                     convertFirstPersonNouns: true,
