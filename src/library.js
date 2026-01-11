@@ -58,6 +58,9 @@ class SorenMoreActions {
     }
     static onInput() {
         const rootConfig = this.loadUserConfig()
+        if (!rootConfig.config.enabled) {
+            return { text: text, stop: false }
+        }
         const doContext = text.match(/> You (.+)/)
         const sayContext = text.match(/> You say "(.+)"/)
         if (sayContext) {
@@ -148,9 +151,13 @@ class SorenMoreActions {
         return { text: text, stop: false }
     }
     static run(runContext) {
+        const rootConfig = this.loadUserConfig()
         if (typeof runContext != "string") {
             this.debug("runContext is not a string!")
             return { text: text, stop: true }
+        }
+        if (!rootConfig.config.enabled) {
+            return { text: text, stop: false }
         }
         switch (runContext.toLowerCase()) {
             case "input":
