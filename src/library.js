@@ -147,10 +147,6 @@ class SorenMoreActions {
         MysticalSorenUtilities.setState(this.NAMESPACE, rootConfig)
         return { text: text, stop: false }
     }
-    static onOutput() {
-        this.loadUserConfig()
-        return { text: text, stop: false }
-    }
     static run(runContext) {
         if (typeof runContext != "string") {
             this.debug("runContext is not a string!")
@@ -164,7 +160,8 @@ class SorenMoreActions {
                 return { text: text, stop: false }
                 break
             case "output":
-                return this.onOutput()
+                return { text: text, stop: false }
+                break
             default:
                 this.debug(`Invalid runContext "${runContext}"`)
         }
