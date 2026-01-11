@@ -160,6 +160,7 @@ class SorenMoreActions {
                 return { text: text, stop: false }
                 break
             case "output":
+                this.debug('Unimplemented runContext "output"')
                 return { text: text, stop: false }
                 break
             default:
