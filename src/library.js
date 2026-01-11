@@ -64,7 +64,7 @@ class SorenMoreActions {
             let content = sayContext[1]
             if (rootConfig.config.closeQuotations) {
                 content = content.replaceAll(/(?<=")[^"\n'`]+(?!.*")/g, (match => { return `${match}"` }))
-                content = content.replaceAll(/(?<=')[^'\n"`]+(?!.*')/g, (match => { return `${match}'` }))
+                // content = content.replaceAll(/(?<=')[^'\n"`]+(?!.*')/g, (match => { return `${match}'` }))
                 content = content.replaceAll(/(?<=`)[^`\n"']+(?!.*`)/g, (match => { return `${match}\`` }))
             }
             if (rootConfig.config.sayContext.convertUnicodePunctuation) {
@@ -124,7 +124,7 @@ class SorenMoreActions {
         if (doContext) {
             if (rootConfig.config.closeQuotations) {
                 text = text.replaceAll(/(?<=")[^"\n'`]+(?!.*")/g, (match => { return `${match}"` }))
-                text = text.replaceAll(/(?<=')[^'\n"`]+(?!.*')/g, (match => { return `${match}'` }))
+                // text = text.replaceAll(/(?<=')[^'\n"`]+(?!.*')/g, (match => { return `${match}'` }))
                 text = text.replaceAll(/(?<=`)[^`\n"']+(?!.*`)/g, (match => { return `${match}\`` }))
             }
             if (rootConfig.config.doContext.firstLetterCapitalization) {
