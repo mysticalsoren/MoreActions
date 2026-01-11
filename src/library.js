@@ -30,28 +30,29 @@ class SorenMoreActions {
     }
     static loadUserConfig() {
         const rootConfig = this.getConfig()
-        if (rootConfig.cardId < 0) {
-            const card = storyCards[addStoryCard("", "", "Class") - 1]
+        const createConfigCard = () => {
+            const card = MysticalSorenUtilities.addStoryCard(`${this.NAMESPACE} Configuration`, JSON.stringify(rootConfig.config, (_, value) => { return value }, 1), "Changes Do / Say / Story to be more dynamic")
             rootConfig.cardId = Number(card.id)
-            card.title = "MoreActions Configuration"
-            card.description = "Changes Do / Say / Story to be more dynamic."
-            card.type = "Class"
-            card.keys = ""
-            card.entry = JSON.stringify(rootConfig.config, (_, value) => {
-                return value
-            }, 1)
+            MysticalSorenUtilities.setState(this.NAMESPACE, rootConfig)
+            return card
+        }
+        if (rootConfig.cardId < 0) {
+            createConfigCard()
             return rootConfig
         }
         const cardIdx = MysticalSorenUtilities.getStoryCardIndexById(rootConfig.cardId)
-        if (cardIdx > -1) {
-            const card = storyCards[cardIdx]
-            try {
-                rootConfig.config = JSON.parse(card.entry)
-            } catch (error) {
-                this.debug(`Could not parse user json. Possibly user error.\n${error}`)
-            }
-        } else {
+        if (cardIdx < 0) {
             this.debug("Config card could not be found!")
+            createConfigCard()
+            return rootConfig
+        }
+        const card = storyCards[cardIdx]
+        try {
+            rootConfig.config = JSON.parse(card.entry)
+        } catch (error) {
+            const card = createConfigCard()
+            this.debug(`Could not parse user json. Possibly user error.\n${error}`)
+            card.description = `Changes Do / Say / Story to be more dynamic\n${error}`
         }
         MysticalSorenUtilities.setState(this.NAMESPACE, rootConfig)
         return rootConfig
