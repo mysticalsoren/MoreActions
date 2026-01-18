@@ -1,13 +1,8 @@
 class SorenMoreActions {
     static NAMESPACE = "SorenMoreActions"
-    static DEBUG = true
-    static debug(msg) {
-        if (this.DEBUG) {
-            console.log(`${this.NAMESPACE}}: ${msg}`)
-        }
-    }
+    static DEBUGGER = MysticalSorenUtilities.Debugger(this.NAMESPACE)
     static getConfig() {
-        return MysticalSorenUtilities.getState(this.NAMESPACE, {
+        return MysticalSorenUtilities.AIDungeon.getState(this.NAMESPACE, {
             config: {
                 enabled: false,
                 closeQuotations: true,
@@ -31,18 +26,18 @@ class SorenMoreActions {
     static loadUserConfig() {
         const rootConfig = this.getConfig()
         const createConfigCard = () => {
-            const card = MysticalSorenUtilities.addStoryCard(`${this.NAMESPACE} Configuration`, JSON.stringify(rootConfig.config, (_, value) => { return value }, 1), "Changes Do / Say / Story to be more dynamic")
+            const card = MysticalSorenUtilities.AIDungeon.addStoryCard(`${this.NAMESPACE} Configuration`, JSON.stringify(rootConfig.config, (_, value) => { return value }, 1), "Changes Do / Say / Story to be more dynamic")
             rootConfig.cardId = Number(card.id)
-            MysticalSorenUtilities.setState(this.NAMESPACE, rootConfig)
+            MysticalSorenUtilities.AIDungeon.setState(this.NAMESPACE, rootConfig)
             return card
         }
         if (rootConfig.cardId < 0) {
             createConfigCard()
             return rootConfig
         }
-        const cardIdx = MysticalSorenUtilities.getStoryCardIndexById(rootConfig.cardId)
+        const cardIdx = MysticalSorenUtilities.AIDungeon.getStoryCardIndexById(rootConfig.cardId)
         if (cardIdx < 0) {
-            this.debug("Config card could not be found!")
+            this.DEBUGGER.log("Config card could not be found!")
             createConfigCard()
             return rootConfig
         }
@@ -51,10 +46,10 @@ class SorenMoreActions {
             rootConfig.config = JSON.parse(card.entry)
         } catch (error) {
             const card = createConfigCard()
-            this.debug(`Could not parse user json. Possibly user error.\n${error}`)
+            this.DEBUGGER.log(`Could not parse user json. Possibly user error.\n${error}`)
             card.description = `Changes Do / Say / Story to be more dynamic\n${error}`
         }
-        MysticalSorenUtilities.setState(this.NAMESPACE, rootConfig)
+        MysticalSorenUtilities.AIDungeon.setState(this.NAMESPACE, rootConfig)
         return rootConfig
     }
     static onInput() {
@@ -148,13 +143,13 @@ class SorenMoreActions {
             }
             return { text: text, stop: false }
         }
-        MysticalSorenUtilities.setState(this.NAMESPACE, rootConfig)
+        MysticalSorenUtilities.AIDungeon.setState(this.NAMESPACE, rootConfig)
         return { text: text, stop: false }
     }
     static run(runContext) {
         const rootConfig = this.loadUserConfig()
         if (typeof runContext != "string") {
-            this.debug("runContext is not a string!")
+            this.DEBUGGER.log("runContext is not a string!")
             return { text: text, stop: true }
         }
         if (!rootConfig.config.enabled) {
@@ -164,15 +159,15 @@ class SorenMoreActions {
             case "input":
                 return this.onInput()
             case "context":
-                this.debug('Unimplemented runContext "context"')
+                this.DEBUGGER.log('Unimplemented runContext "context"')
                 return { text: text, stop: false }
                 break
             case "output":
-                this.debug('Unimplemented runContext "output"')
+                this.DEBUGGER.log('Unimplemented runContext "output"')
                 return { text: text, stop: false }
                 break
             default:
-                this.debug(`Invalid runContext "${runContext}"`)
+                this.DEBUGGER.log(`Invalid runContext "${runContext}"`)
         }
         return { text: text, stop: true }
     }
