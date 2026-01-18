@@ -1,8 +1,9 @@
 class SorenMoreActions {
-    static NAMESPACE = "SorenMoreActions"
-    static DEBUGGER = MysticalSorenUtilities.Debugger(this.NAMESPACE)
+    static get DEBUGGER() {
+        return MysticalSorenUtilities.Debugger(this.name)
+    }
     static getConfig() {
-        return MysticalSorenUtilities.AIDungeon.getState(this.NAMESPACE, {
+        return MysticalSorenUtilities.AIDungeon.getState(this.name, {
             config: {
                 enabled: false,
                 closeQuotations: true,
@@ -26,9 +27,9 @@ class SorenMoreActions {
     static loadUserConfig() {
         const rootConfig = this.getConfig()
         const createConfigCard = () => {
-            const card = MysticalSorenUtilities.AIDungeon.addStoryCard(`${this.NAMESPACE} Configuration`, JSON.stringify(rootConfig.config, (_, value) => { return value }, 1), "Changes Do / Say / Story to be more dynamic")
+            const card = MysticalSorenUtilities.AIDungeon.addStoryCard(`${this.name} Configuration`, JSON.stringify(rootConfig.config, (_, value) => { return value }, 1), "Changes Do / Say / Story to be more dynamic")
             rootConfig.cardId = Number(card.id)
-            MysticalSorenUtilities.AIDungeon.setState(this.NAMESPACE, rootConfig)
+            MysticalSorenUtilities.AIDungeon.setState(this.name, rootConfig)
             return card
         }
         if (rootConfig.cardId < 0) {
@@ -49,7 +50,7 @@ class SorenMoreActions {
             this.DEBUGGER.log(`Could not parse user json. Possibly user error.\n${error}`)
             card.description = `Changes Do / Say / Story to be more dynamic\n${error}`
         }
-        MysticalSorenUtilities.AIDungeon.setState(this.NAMESPACE, rootConfig)
+        MysticalSorenUtilities.AIDungeon.setState(this.name, rootConfig)
         return rootConfig
     }
     static onInput() {
@@ -143,7 +144,7 @@ class SorenMoreActions {
             }
             return { text: text, stop: false }
         }
-        MysticalSorenUtilities.AIDungeon.setState(this.NAMESPACE, rootConfig)
+        MysticalSorenUtilities.AIDungeon.setState(this.name, rootConfig)
         return { text: text, stop: false }
     }
     static run(runContext) {
