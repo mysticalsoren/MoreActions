@@ -47,8 +47,8 @@ class SorenMoreActions {
             rootConfig.config = JSON.parse(card.description)
         } catch (error) {
             const card = createConfigCard()
-            this.DEBUGGER.log(`Could not parse user json. Possibly user error.\n${error}`)
-            card.description = `Changes Do / Say / Story to be more dynamic\n${error}`
+            // this.DEBUGGER.log(`Could not parse user json. Possibly user error.\n${error}`)
+            // card.description = `Changes Do / Say / Story to be more dynamic\n${error}`
         }
         MysticalSorenUtilities.AIDungeon.setState(this.name, rootConfig)
         return rootConfig
