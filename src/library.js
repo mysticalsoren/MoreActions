@@ -27,7 +27,7 @@ class SorenMoreActions {
     static loadUserConfig() {
         const rootConfig = this.getConfig()
         const createConfigCard = () => {
-            const card = MysticalSorenUtilities.AIDungeon.addStoryCard(`${this.name} Configuration`, JSON.stringify(rootConfig.config, (_, value) => { return value }, 1), "Changes Do / Say / Story to be more dynamic")
+            const card = MysticalSorenUtilities.AIDungeon.addStoryCard(`${this.name} Configuration`, "", JSON.stringify(rootConfig.config, (_, value) => { return value }, 1), "configuration")
             rootConfig.cardId = Number(card.id)
             MysticalSorenUtilities.AIDungeon.setState(this.name, rootConfig)
             return card
@@ -44,7 +44,7 @@ class SorenMoreActions {
         }
         const card = storyCards[cardIdx]
         try {
-            rootConfig.config = JSON.parse(card.entry)
+            rootConfig.config = JSON.parse(card.description)
         } catch (error) {
             const card = createConfigCard()
             this.DEBUGGER.log(`Could not parse user json. Possibly user error.\n${error}`)
